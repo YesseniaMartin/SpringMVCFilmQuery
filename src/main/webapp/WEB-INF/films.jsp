@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Film</title>
-<%@ include file="bootstrapfooter.jsp" %> 
+<%@ include file="bootstraphead.jsp" %> 
 </head>
 <body>
 	<form action="searchFilms.do" method="get">
@@ -18,12 +18,12 @@
 	</form>
 	<c:if test="${! empty films }">
 		<table>
-		<tr>
-			<th>Title</th>
-			<th>Description</th>
-			<th>Rating</th>
-			<th>Release Year</th>
-		</tr>
+			<tr>
+				<th>Title</th>
+				<th>Description</th>
+				<th>Rating</th>
+				<th>Release Year</th>
+			</tr>
 		<c:forEach items="${films }" var="film">
 			<tr>
 				<td><a href="searchFilms.do?title=${film.title }"></a></td>

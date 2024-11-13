@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>SDPT Films</title>
-<%@ include file="bootstrapfooter.jsp" %> 
+<%@ include file="bootstraphead.jsp" %> 
 </head>
 <body>
 	<form action="findById.do">

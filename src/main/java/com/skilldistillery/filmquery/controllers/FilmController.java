@@ -1,6 +1,7 @@
 package com.skilldistillery.filmquery.controllers;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ private final DatabaseAccessor dao;
 	public FilmController(DatabaseAccessor dao) {
 		this.dao = dao;
 	}
+	
 	@RequestMapping(path= {"/", "index.do" })
 	public ModelAndView home() {
 		Film film = null;
@@ -31,15 +33,15 @@ private final DatabaseAccessor dao;
 	@RequestMapping(path= {"searchFilms.do" })
 	public ModelAndView searchFilms(@RequestParam("keyword") String keyword) {
 		ModelAndView mv = new ModelAndView();
-		List<Film> result;
+		List<Film> result = new ArrayList<>();
 		try {
 			result = dao.searchFilms(keyword);
 			mv.addObject("keyword", result);
-			mv.setViewName("WEB-INF/films.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
+		mv.setViewName("WEB-INF/films.jsp");
 		return mv;
 	}
 	

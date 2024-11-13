@@ -202,49 +202,75 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 		return actor;
 	}
-	
+
 	@Override
 	public Film createFilm(Film aFilm) throws SQLException {
 		String name = "student";
 		String pass = "student";
-
-		String sql = "INSERT INTO film (title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, special_features) "
-	               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-		try (Connection conn = DriverManager.getConnection(URL, name, pass);
-				PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-				ResultSet rs = ps.executeQuery()) {
-			ps.setString(1, aFilm.getTitle());
-
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				String title = rs.getString("title");
-				String description = rs.getString("description");
-				Integer releaseYear = rs.getInt("release_year");
-				int languageId = rs.getInt("language_id");
-				int rentalDuration = rs.getInt("rental_duration");
-				double rentalRate = rs.getDouble("rental_rate");
-				int length = rs.getInt("length");
-				double replacementCost = rs.getDouble("replacement_cost");
-				String rating = rs.getString("rating");
-				String specialFeatures = rs.getString("special_features");
-
-				Film film = new Film(id, title, description, releaseYear, languageId, rentalDuration, rentalRate,
-						length, replacementCost, rating, specialFeatures);
-
-				List<Actor> actors = findActorsByFilmId(film.getId());
-				film.setActors(actors);
-				actors.add(length, findActorById(id));
+		Connection conn = null;
+		aFilm.setLanguageId(1);
+		
+		try {
+			conn = DriverManager.getConnection(URL, name, pass);
+			conn.setAutoCommit(false);
+			String sql = "INSERT INTO film (title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, special_features) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
-				rs.close();
-				ps.close();
-				conn.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+//				ResultSet rs = ps.executeQuery(); 
+			
+				ps.setString(2, aFilm.getTitle());
+				ps.setString(2, aFilm.getDescription());
+				ps.setInt(3, aFilm.getReleaseYear());
+		        ps.setInt(4, aFilm.getLanguageId());
+		        ps.setInt(5, aFilm.getRentalDuration());
+		        ps.setDouble(6, aFilm.getRentalRate());
+		        ps.setInt(7, aFilm.getLength());
+		        ps.setDouble(8, aFilm.getReplacementCost());
+		        ps.setString(9, aFilm.getRating());
+		        ps.setString(10, aFilm.getSpecialFeatures());
+		        
+		        int updateFilmCount = ps.executeUpdate();
+		        
+		        if(updateFilmCount > 0) {
+		        	ResultSet generatedKeys = ps.getGeneratedKeys();
+		        		
+		        		if (generatedKeys.next()) {
+	                    int newFilmId = generatedKeys.getInt(1);
+	                    
+	                    aFilm.setId(newFilmId);
+	                    
+	                    if (aFilm.getActors() != null && aFilm.getActors().size() > 0) {
+	                    	sql = "INSERT INTO film_actor (film_id, actor_id) VALUES (?,?)";
+	                    	ps = conn.prepareStatement(sql);
+	                    	
+	                    	for(Actor actor : aFilm.getActors()) {
+	                    		ps.setInt(1, actor.getId());
+	                    		ps.setInt(2, newFilmId);
+	                    		updateFilmCount = ps.executeUpdate();
+	                    		}
+	                    	}
+	                    }
+		        		conn.commit(); 
+		        	
+		        	} else {
+		        		aFilm = null;
+		        	}
+		        	conn.close();
+		        	
+					} catch (SQLException e) {
+						e.printStackTrace();
+						if (conn != null) {
+							try { conn.rollback(); }
+							catch (SQLException e2) {
+								System.err.println("Error trying to rollback");
+							}
+						}
+						throw new RuntimeException("Error inserting Film " + aFilm);
+					}
 		return aFilm;
 	}
+
 
 
 	@Override
@@ -354,37 +380,34 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		}
 		return actors;
 	}
-	
+
 	@Override
 	public List<Film> searchFilms(String keyword) throws SQLException {
 		List<Film> result = new ArrayList<>();
 		String name = "student";
 		String pass = "student";
-		
 
 		String sql = "SELECT title, description, release_year, rating FROM film WHERE title LIKE ?";
-		
 
 		Connection conn = DriverManager.getConnection(URL, name, pass);
 		PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		
+
 		String searchKeyword = "%" + keyword.toLowerCase() + "%";
 		ps.setString(1, searchKeyword);
-		
-		
+
 		try (ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
 				String title = rs.getString("title");
 				String description = rs.getString("description");
 				String rating = rs.getString("rating");
 				Integer releaseYear = rs.getInt("release_year");
-	
-			Film film = new Film(title, description, rating, releaseYear);
-				
+
+				Film film = new Film(title, description, rating, releaseYear);
+
 				result.add(film);
 				result.add(film);
 			}
-			
+
 			rs.close();
 			ps.close();
 			conn.close();
