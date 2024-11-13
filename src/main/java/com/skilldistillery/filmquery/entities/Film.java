@@ -49,6 +49,13 @@ public class Film {
 		this.specialFeatures = specialFeatures;
 
 	}
+	public Film(String title, String description,String rating, Integer releaseYear) {
+		
+		this.title = title;
+		this.description = description;
+		this.rating = rating;
+		this.releaseYear = releaseYear;
+	}
 	public Film(int id, String title, String description, Integer releaseYear, int languageId, int rentalDuration,
 			double rentalRate, int length, double replacementCost, String rating, String specialFeatures, List<Actor> actors) {
 		this.id = id;

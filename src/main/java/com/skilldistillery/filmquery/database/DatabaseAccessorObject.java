@@ -72,7 +72,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			conn.setAutoCommit(false);
 
 			String sql = "UPDATE actor SET first_name=?, last_name=?  WHERE id=?";
-			PreparedStatement stmt = conn.prepareStatement(sql);
+			PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 			stmt.setString(1, actor.getFirstName());
 			stmt.setString(2, actor.getLastName());
@@ -202,16 +202,19 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 		return actor;
 	}
+	
 	@Override
 	public Film createFilm(Film aFilm) throws SQLException {
 		String name = "student";
 		String pass = "student";
 
-		String sql = "SELECT * FROM film";
+		String sql = "INSERT INTO film (title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, special_features) "
+	               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try (Connection conn = DriverManager.getConnection(URL, name, pass);
-				PreparedStatement ps = conn.prepareStatement(sql);
+				PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				ResultSet rs = ps.executeQuery()) {
+			ps.setString(1, aFilm.getTitle());
 
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -253,7 +256,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		Connection conn = DriverManager.getConnection(URL, name, pass);
 		String sql = "SELECT * FROM film WHERE id = ?";
 
-		PreparedStatement ps = conn.prepareStatement(sql);
+		PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, filmId);
 		ResultSet rs = ps.executeQuery();
 
@@ -294,7 +297,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 		String sql = "SELECT id, first_name, last_name FROM actor WHERE id = ?";
 		Connection conn = DriverManager.getConnection(URL, name, pass);
-		PreparedStatement ps = conn.prepareStatement(sql);
+		PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 		ps.setInt(1, actorId);
 
@@ -327,7 +330,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				+ "JOIN film_actor ON actor.id = film_actor.actor_id " + "WHERE film_actor.film_id = ?";
 
 		try (Connection conn = DriverManager.getConnection(URL, name, pass);
-				PreparedStatement ps = conn.prepareStatement(sql)) {
+				PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
 			ps.setInt(1, filmId);
 
@@ -357,33 +360,34 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		List<Film> result = new ArrayList<>();
 		String name = "student";
 		String pass = "student";
+		
 
-		String sql = "SELECT * FROM film WHERE id = ?";
+		String sql = "SELECT title, description, release_year, rating FROM film WHERE title LIKE ?";
+		
 
 		Connection conn = DriverManager.getConnection(URL, name, pass);
-		PreparedStatement ps = conn.prepareStatement(sql);
-
-		ps.setString(1, keyword);
+		PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		
+		String searchKeyword = "%" + keyword.toLowerCase() + "%";
+		ps.setString(1, searchKeyword);
+		
+		
 		try (ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
-				int id = rs.getInt("id");
 				String title = rs.getString("title");
 				String description = rs.getString("description");
-				Integer releaseYear = rs.getInt("release_year");
-				int languageId = rs.getInt("language_id");
-				int rentalDuration = rs.getInt("rental_duration");
-				double rentalRate = rs.getDouble("rental_rate");
-				int length = rs.getInt("length");
-				double replacementCost = rs.getDouble("replacement_cost");
 				String rating = rs.getString("rating");
-				String specialFeatures = rs.getString("special_features");
-
-				Film film = new Film(id, title, description, releaseYear, languageId, rentalDuration, rentalRate,
-						length, replacementCost, rating, specialFeatures);
-
+				Integer releaseYear = rs.getInt("release_year");
+	
+			Film film = new Film(title, description, rating, releaseYear);
+				
 				result.add(film);
-
+				result.add(film);
 			}
+			
+			rs.close();
+			ps.close();
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
