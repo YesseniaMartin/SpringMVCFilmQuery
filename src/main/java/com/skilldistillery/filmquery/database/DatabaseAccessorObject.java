@@ -61,26 +61,25 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		return true;
 	}
 	
-	public boolean deleteFilm(Film aFilm) throws SQLException{
+	public boolean deleteFilm(Film aFilm) throws SQLException {
 		String user = "student";
 		String pass = "student";
 		boolean isDeleted = false;
 		Connection conn = null;
-
-		String sqlFilmActors = "DELETE FROM film_actor WHERE film_id = ?"; //the child
-		String sqlFilms = "DELETE FROM film WHERE id = ?"; //the parent
 		
-		try {
-			conn = DriverManager.getConnection(URL, user, pass);
+		try{conn = DriverManager.getConnection(URL, user, pass);
 			// start the transaction
 			conn.setAutoCommit(false);
-			
-			
+		
+		
+			String sqlFilmActors = "DELETE FROM film_actor WHERE film_id = ?"; //the child
 			//first the child
 			try(PreparedStatement psFilmActors = conn.prepareStatement(sqlFilmActors))  {
 				psFilmActors.setInt(1, aFilm.getId());
 				psFilmActors.executeUpdate();
 			}
+			
+			String sqlFilms = "DELETE FROM film WHERE id = ?"; //the parent
 			//second the parent
 			try (PreparedStatement psFilms = conn.prepareStatement(sqlFilms)) {
 				psFilms.setInt(1, aFilm.getId());
@@ -91,6 +90,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			}
 			
 			conn.commit();
+			conn.close();
 	} catch (SQLException e) {
         e.printStackTrace();
         if (conn != null) {
@@ -99,12 +99,11 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
             } catch (SQLException rollbackException) {
                 rollbackException.printStackTrace();
             	}
-			}
 		}
 		
-		return isDeleted;
 	}
-		
+		return isDeleted;
+}	
 	
 
 	public boolean saveActor(Actor actor) {

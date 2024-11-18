@@ -14,13 +14,14 @@
 	<c:if test="${! empty film }">
 		<table>
 		<tr>
-			<c:forEach items="${film }" var="film">
+
 			<tr>
-				<td>Title: ${film.title }</td>
-				<td>Description: ${film.description }</td>
-				<td>Release Year: ${film.releaseYear }</td>
+				<td><pre><b>Film ID:</b> ${film.id }</pre></td>
+				<td><pre><b>Title:</b> ${film.title }</pre></td>
+				<td><pre><b>Description:</b> ${film.description }</pre></td>
+				<td><pre><b>Release Year:</b> ${film.releaseYear }</pre></td>
 			<tr>
-			</c:forEach>
+
 		</table>
 		<tr>
 	</c:if>
@@ -28,8 +29,6 @@
 	<c:if test="${! empty film }">
 		<h3>No such film found.</h3>
 	</c:if>
-	
-	<br>
 	
 	
 	<%@ include file="bootstrapfooter.jsp" %>

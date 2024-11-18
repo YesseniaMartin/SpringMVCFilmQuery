@@ -24,9 +24,9 @@
 				<th>Rating</th>
 				<th>Release Year</th>
 			</tr>
-		<c:forEach items="${films }" var="film">
+		<c:forEach items="${films }" var="films">
 			<tr>
-				<td><a href="searchFilms.do?title=${film.title }"></a></td>
+				<td><a href="searchFilms.do? title=${film.title }"></a></td>
 				<td>${film.description }</td>
 				<td>${film.rating }</td>
 				<td>${film.releaseYear }</td>
