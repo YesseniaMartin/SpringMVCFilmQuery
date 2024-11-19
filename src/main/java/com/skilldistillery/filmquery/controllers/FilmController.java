@@ -2,10 +2,15 @@ package com.skilldistillery.filmquery.controllers;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -27,20 +32,20 @@ private final DatabaseAccessor dao;
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("WEB-INF/index.jsp");
 		mv.addObject("film", film);
-		
+
 		return mv;
 	}
-	@RequestMapping(path= {"searchFilms.do" })
-	public ModelAndView searchFilms(@RequestParam("keyword") String keyword) {
+	@RequestMapping(path= "searchFilms.do", method = RequestMethod.GET)
+	public ModelAndView searchFilms(@RequestParam("films") String keyword) {
 		ModelAndView mv = new ModelAndView();
-		List<Film> result = new ArrayList<>();
+		List<Film> films = new ArrayList<>();
 		try {
-			result = dao.searchFilms(keyword);
-			mv.addObject("keyword", result);
+			films = dao.searchFilms(keyword);
+			mv.addObject("films", films);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+		mv.addObject("films", films);
 		mv.setViewName("WEB-INF/films.jsp");
 		return mv;
 	}
@@ -49,12 +54,10 @@ private final DatabaseAccessor dao;
 	public ModelAndView findFilmById(@RequestParam("id") int id) {
 		 ModelAndView mv = new ModelAndView();
 		
-			Film film = null;
 			try {
-				film = dao.findFilmById(id);
-				
-				mv.setViewName("WEB-INF/film.jsp");
+				Film film = dao.findFilmById(id);
 				mv.addObject("film", film);
+				mv.setViewName("WEB-INF/film.jsp");
 				
 				
 			} catch (SQLException e) {

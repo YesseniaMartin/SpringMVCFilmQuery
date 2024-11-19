@@ -11,24 +11,28 @@
 <%@ include file="bootstraphead.jsp" %> 
 </head>
 <body>
-	<c:if test="${! empty film }">
+<p>Search for Films:</p>
+<c:choose>
+	<c:when test="${! empty film }">
 		<table>
 		<tr>
 
 			<tr>
-				<td><pre><b>Film ID:</b> ${film.id }</pre></td>
-				<td><pre><b>Title:</b> ${film.title }</pre></td>
-				<td><pre><b>Description:</b> ${film.description }</pre></td>
-				<td><pre><b>Release Year:</b> ${film.releaseYear }</pre></td>
+				<td><td><b>Film ID:</b> ${film.id }</td></td>
+				<td><td><b>Title:</b> ${film.title }</td></td>
+				<td><td><b>Description:</b> ${film.description }</td></td>
+				<td><td><b>Release Year:</b> ${film.releaseYear }</td></td>
 			<tr>
 
 		</table>
 		<tr>
-	</c:if>
-	<br>
-	<c:if test="${! empty film }">
-		<h3>No such film found.</h3>
-	</c:if>
+	</c:when>
+    	<c:otherwise>
+		<c:if test="${! empty film }">
+			<h3>No such film found.</h3>
+		</c:if>
+		</c:otherwise>
+    </c:choose>
 	
 	
 	<%@ include file="bootstrapfooter.jsp" %>
