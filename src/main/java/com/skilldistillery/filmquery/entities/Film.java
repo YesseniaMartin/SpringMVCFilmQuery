@@ -10,7 +10,7 @@ public class Film {
 	private int id;
 	private String title;
 	private String description;
-	private Integer releaseYear;
+	private Integer releaseYear = 0;
 	private Integer languageId = 1;
 	private Integer rentalDuration = 3;
 	private Double rentalRate = 4.99;
@@ -32,9 +32,11 @@ public class Film {
 		this.title = title;
 		this.languageId = languageId;
 	}
+	
 
-	public Film(int id, String title, String description, Integer releaseYear, Integer languageId, Integer rentalDuration,
-			Double rentalRate, Integer length, Double replacementCost, String rating, String specialFeatures) {
+	public Film(int id, String title, String description, Integer releaseYear, Integer languageId,
+			Integer rentalDuration, Double rentalRate, Integer length, Double replacementCost, String rating,
+			String specialFeatures) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -47,17 +49,37 @@ public class Film {
 		this.replacementCost = replacementCost;
 		this.rating = rating;
 		this.specialFeatures = specialFeatures;
-
 	}
+	
+	public Film( String title, String description, Integer releaseYear, Integer languageId,
+			Integer rentalDuration, Double rentalRate, Integer length, Double replacementCost, String rating,
+			String specialFeatures) {
+		this.title = title;
+		this.description = description;
+		this.releaseYear = releaseYear;
+		this.languageId = languageId;
+		this.rentalDuration = rentalDuration;
+		this.rentalRate = rentalRate;
+		this.length = length;
+		this.replacementCost = replacementCost;
+		this.rating = rating;
+		this.specialFeatures = specialFeatures;
+	}
+
 	public Film(String title, String description,String rating, Integer releaseYear) {
-		
 		this.title = title;
 		this.description = description;
 		this.rating = rating;
 		this.releaseYear = releaseYear;
 	}
-	public Film(int id, String title, String description, Integer releaseYear, Integer languageId, Integer rentalDuration,
-			Double rentalRate, Integer length, Double replacementCost, String rating, String specialFeatures, List<Actor> actors) {
+	
+//	getters and setters
+
+	
+	public Film(int id, String title, String description, Integer releaseYear, Integer languageId,
+			Integer rentalDuration, Double rentalRate, Integer length, Double replacementCost, String rating,
+			String specialFeatures, List<Actor> actors) {
+		super();
 		this.id = id;
 		this.title = title;
 		this.description = description;
@@ -70,11 +92,8 @@ public class Film {
 		this.rating = rating;
 		this.specialFeatures = specialFeatures;
 		this.actors = actors;
-		
 	}
-//	getters and setters
 
-	
 	public int getId() {
 		return id;
 	}

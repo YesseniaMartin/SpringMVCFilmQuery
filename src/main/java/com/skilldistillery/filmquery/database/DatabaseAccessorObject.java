@@ -61,51 +61,50 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		}
 		return true;
 	}
-	
+
 	public boolean deleteFilm(Film aFilm) throws SQLException {
 		String user = "student";
 		String pass = "student";
 		boolean isDeleted = false;
 		Connection conn = null;
-		
-		try{conn = DriverManager.getConnection(URL, user, pass);
+
+		try {
+			conn = DriverManager.getConnection(URL, user, pass);
 			// start the transaction
 			conn.setAutoCommit(false);
-		
-		
-			String sqlFilmActors = "DELETE FROM film_actor WHERE film_id = ?"; //the child
-			//first the child
-			try(PreparedStatement psFilmActors = conn.prepareStatement(sqlFilmActors))  {
+
+			String sqlFilmActors = "DELETE FROM film_actor WHERE film_id = ?"; // the child
+			// first the child
+			try (PreparedStatement psFilmActors = conn.prepareStatement(sqlFilmActors)) {
 				psFilmActors.setInt(1, aFilm.getId());
 				psFilmActors.executeUpdate();
 			}
-			
-			String sqlFilms = "DELETE FROM film WHERE id = ?"; //the parent
-			//second the parent
+
+			String sqlFilms = "DELETE FROM film WHERE id = ?"; // the parent
+			// second the parent
 			try (PreparedStatement psFilms = conn.prepareStatement(sqlFilms)) {
 				psFilms.setInt(1, aFilm.getId());
 				int filmExecuted = psFilms.executeUpdate();
-				if(filmExecuted > 0) {
+				if (filmExecuted > 0) {
 					isDeleted = true;
 				}
 			}
-			
+
 			conn.commit();
 			conn.close();
-	} catch (SQLException e) {
-        e.printStackTrace();
-        if (conn != null) {
-            try {
-                conn.rollback();
-            } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
-            	}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException rollbackException) {
+					rollbackException.printStackTrace();
+				}
+			}
+
 		}
-		
-	}
 		return isDeleted;
-}	
-	
+	}
 
 	public boolean saveActor(Actor actor) {
 		String user = "student";
@@ -255,74 +254,112 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		String pass = "student";
 		Connection conn = null;
 		aFilm.setLanguageId(1);
-		
+
 		try {
-			conn = DriverManager.getConnection(URL, name, pass);
-			conn.setAutoCommit(false);
+			try {
+				conn = DriverManager.getConnection(URL, name, pass);
+				conn.setAutoCommit(false);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("Database connection failed");
+			}
 			String sql = "INSERT INTO film (title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, special_features) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			
+
 			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 //				ResultSet rs = ps.executeQuery(); 
+
+			ps.setString(1, aFilm.getTitle());
+			ps.setString(2, aFilm.getDescription());
 			
-				ps.setString(2, aFilm.getTitle());
-				ps.setString(2, aFilm.getDescription());
-				
-				if (aFilm.getReleaseYear() != null) {
+			 if (aFilm.getReleaseYear() != null) {
 		            ps.setInt(3, aFilm.getReleaseYear());
 		        } else {
 		            ps.setNull(3, Types.INTEGER);
 		        }
-		        ps.setInt(4, aFilm.getLanguageId());
-		        ps.setInt(5, aFilm.getRentalDuration());
-		        ps.setDouble(6, aFilm.getRentalRate());
-		        ps.setInt(7, aFilm.getLength());
-		        ps.setDouble(8, aFilm.getReplacementCost());
-		        ps.setString(9, aFilm.getRating());
-		        ps.setString(10, aFilm.getSpecialFeatures());
-		        
-		        int updateFilmCount = ps.executeUpdate();
-		        
-		        if(updateFilmCount > 0) {
-		        	ResultSet generatedKeys = ps.getGeneratedKeys();
-		        		
-		        		if (generatedKeys.next()) {
-	                    int newFilmId = generatedKeys.getInt(1);
-	                    
-	                    aFilm.setId(newFilmId);
-	                    
-	                    if (aFilm.getActors() != null && aFilm.getActors().size() > 0) {
-	                    	sql = "INSERT INTO film_actor (film_id, actor_id) VALUES (?,?)";
-	                    	ps = conn.prepareStatement(sql);
-	                    	
-	                    	for(Actor actor : aFilm.getActors()) {
-	                    		ps.setInt(1, actor.getId());
-	                    		ps.setInt(2, newFilmId);
-	                    		updateFilmCount = ps.executeUpdate();
-	                    		}
-	                    	}
-	                    }
-		        		conn.commit(); 
-		        	
-		        	} else {
-		        		aFilm = null;
-		        	}
-		        	conn.close();
-		        	
-					} catch (SQLException e) {
-						e.printStackTrace();
-						if (conn != null) {
-							try { conn.rollback(); }
-							catch (SQLException e2) {
-								System.err.println("Error trying to rollback");
-							}
+			
+			ps.setInt(4, aFilm.getLanguageId());
+			
+			 if (aFilm.getRentalDuration() != null) {
+		            ps.setInt(5, aFilm.getRentalDuration());
+		        } else {
+		            ps.setNull(5, Types.INTEGER);
+		        }
+			
+			if (aFilm.getRentalRate() != null) {
+	            ps.setDouble(6, aFilm.getRentalRate());
+	        } else {
+	            ps.setNull(6, Types.DOUBLE);
+	        }
+
+			if (aFilm.getLength() != null) {
+	            ps.setInt(7, aFilm.getLength());
+	        } else {
+	            ps.setNull(7, Types.INTEGER);
+	        }
+		
+			if (aFilm.getReplacementCost() != null) {
+	            ps.setDouble(8, aFilm.getReplacementCost());
+	        } else {
+	            ps.setNull(8, Types.DOUBLE);
+	        }
+			
+            ps.setString(9, aFilm.getRating());
+           
+			ps.setString(10, aFilm.getSpecialFeatures());
+			
+			
+
+			Integer updateFilmCount = ps.executeUpdate();
+
+			if (updateFilmCount > 0) {
+				ResultSet generatedKeys = ps.getGeneratedKeys();
+
+				if (generatedKeys.next()) {
+					Integer newFilmId = generatedKeys.getInt(1);
+
+					aFilm.setId(newFilmId);
+
+					if (aFilm.getActors() != null && !aFilm.getActors().isEmpty()) {
+						sql = "INSERT INTO film_actor (film_id, actor_id) VALUES (?,?)";
+						ps = conn.prepareStatement(sql);
+
+						for (Actor actor : aFilm.getActors()) {
+							ps.setInt(1, actor.getId());
+							ps.setInt(2, newFilmId);
+							updateFilmCount = ps.executeUpdate();
 						}
-						throw new RuntimeException("Error inserting Film " + aFilm);
 					}
+				}
+				conn.commit();
+
+			} else {
+				throw new RuntimeException("Failed to insert film.");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e2) {
+					System.err.println("Error trying to rollback");
+				}
+			}
+			throw new RuntimeException("Error inserting Film " + aFilm, e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close(); // Ensure connection is closed
+				} catch (SQLException closeEx) {
+					System.err.println("Error closing connection");
+					closeEx.printStackTrace();
+				}
+			}
+		}
+
 		return aFilm;
 	}
-
-
 
 	@Override
 	public Film findFilmById(int filmId) throws SQLException {

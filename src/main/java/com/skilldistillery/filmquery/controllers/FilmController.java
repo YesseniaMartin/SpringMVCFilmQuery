@@ -67,13 +67,20 @@ public class FilmController {
 	@RequestMapping(path = {"createFilm.do"}, method = RequestMethod.POST)
 	public ModelAndView createFilm(@ModelAttribute Film afilm) {
 		ModelAndView mv = new ModelAndView();
+		if (afilm.getTitle() == null || afilm.getTitle().isEmpty()) {
+	        mv.addObject("errorMessage", "Title is required.");
+	        mv.setViewName("WEB-INF/createFilm.jsp");
+	        return mv;
+	    }
 		try {
-			Film createdFilm = dao.createFilm(afilm);
-			mv.addObject("createdFilm", createdFilm);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		mv.setViewName("WEB-INF/createFilm.jsp");
-		return mv;
+	        Film createdFilm = dao.createFilm(afilm);
+	        mv.addObject("createdFilm", createdFilm);
+	    } catch (Exception e) {
+	        mv.addObject("errorMessage", "Error creating film: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    mv.setViewName("WEB-INF/createFilm.jsp");
+	    return mv;
 	}
-}
+	}
