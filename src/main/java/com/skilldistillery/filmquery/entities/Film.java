@@ -11,11 +11,11 @@ public class Film {
 	private String title;
 	private String description;
 	private Integer releaseYear;
-	private int languageId;
-	private int rentalDuration = 3;
-	private double rentalRate = 4.99;
-	private int length;
-	private double replacementCost;
+	private Integer languageId = 1;
+	private Integer rentalDuration = 3;
+	private Double rentalRate = 4.99;
+	private Integer length = 10;
+	private Double replacementCost;
 	private String rating = "G";
 	private String specialFeatures;
 
@@ -33,8 +33,8 @@ public class Film {
 		this.languageId = languageId;
 	}
 
-	public Film(int id, String title, String description, Integer releaseYear, int languageId, int rentalDuration,
-			double rentalRate, int length, double replacementCost, String rating, String specialFeatures) {
+	public Film(int id, String title, String description, Integer releaseYear, Integer languageId, Integer rentalDuration,
+			Double rentalRate, Integer length, Double replacementCost, String rating, String specialFeatures) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -56,8 +56,8 @@ public class Film {
 		this.rating = rating;
 		this.releaseYear = releaseYear;
 	}
-	public Film(int id, String title, String description, Integer releaseYear, int languageId, int rentalDuration,
-			double rentalRate, int length, double replacementCost, String rating, String specialFeatures, List<Actor> actors) {
+	public Film(int id, String title, String description, Integer releaseYear, Integer languageId, Integer rentalDuration,
+			Double rentalRate, Integer length, Double replacementCost, String rating, String specialFeatures, List<Actor> actors) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
@@ -74,16 +74,9 @@ public class Film {
 	}
 //	getters and setters
 
+	
 	public int getId() {
 		return id;
-	}
-
-	public List<Actor> getActors() {
-		return actors;
-	}
-
-	public void setActors(List<Actor> actors) {
-		this.actors = actors;
 	}
 
 	public void setId(int id) {
@@ -114,43 +107,43 @@ public class Film {
 		this.releaseYear = releaseYear;
 	}
 
-	public int getLanguageId() {
+	public Integer getLanguageId() {
 		return languageId;
 	}
 
-	public void setLanguageId(int languageId) {
+	public void setLanguageId(Integer languageId) {
 		this.languageId = languageId;
 	}
 
-	public int getRentalDuration() {
+	public Integer getRentalDuration() {
 		return rentalDuration;
 	}
 
-	public void setRentalDuration(int rentalDuration) {
+	public void setRentalDuration(Integer rentalDuration) {
 		this.rentalDuration = rentalDuration;
 	}
 
-	public double getRentalRate() {
+	public Double getRentalRate() {
 		return rentalRate;
 	}
 
-	public void setRentalRate(double rentalRate) {
+	public void setRentalRate(Double rentalRate) {
 		this.rentalRate = rentalRate;
 	}
 
-	public int getLength() {
+	public Integer getLength() {
 		return length;
 	}
 
-	public void setLength(int length) {
+	public void setLength(Integer length) {
 		this.length = length;
 	}
 
-	public double getReplacementCost() {
+	public Double getReplacementCost() {
 		return replacementCost;
 	}
 
-	public void setReplacementCost(double replacementCost) {
+	public void setReplacementCost(Double replacementCost) {
 		this.replacementCost = replacementCost;
 	}
 
@@ -170,13 +163,20 @@ public class Film {
 		this.specialFeatures = specialFeatures;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(description, id, languageId, length, rating, releaseYear, rentalDuration, rentalRate,
-				replacementCost, specialFeatures, title);
+	public List<Actor> getActors() {
+		return actors;
 	}
 
-//	HasEquals
+	public void setActors(List<Actor> actors) {
+		this.actors = actors;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(actors, description, id, languageId, length, rating, releaseYear, rentalDuration,
+				rentalRate, replacementCost, specialFeatures, title);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -186,11 +186,11 @@ public class Film {
 		if (getClass() != obj.getClass())
 			return false;
 		Film other = (Film) obj;
-		return Objects.equals(description, other.description) && id == other.id && languageId == other.languageId
-				&& length == other.length && Objects.equals(rating, other.rating)
-				&& Objects.equals(releaseYear, other.releaseYear) && rentalDuration == other.rentalDuration
-				&& Double.doubleToLongBits(rentalRate) == Double.doubleToLongBits(other.rentalRate)
-				&& Double.doubleToLongBits(replacementCost) == Double.doubleToLongBits(other.replacementCost)
+		return Objects.equals(actors, other.actors) && Objects.equals(description, other.description) && id == other.id
+				&& Objects.equals(languageId, other.languageId) && Objects.equals(length, other.length)
+				&& Objects.equals(rating, other.rating) && Objects.equals(releaseYear, other.releaseYear)
+				&& Objects.equals(rentalDuration, other.rentalDuration) && Objects.equals(rentalRate, other.rentalRate)
+				&& Objects.equals(replacementCost, other.replacementCost)
 				&& Objects.equals(specialFeatures, other.specialFeatures) && Objects.equals(title, other.title);
 	}
 
@@ -199,6 +199,8 @@ public class Film {
 		return "Film [id=" + id + ", title=" + title + ", description=" + description + ", releaseYear=" + releaseYear
 				+ ", languageId=" + languageId + ", rentalDuration=" + rentalDuration + ", rentalRate=" + rentalRate
 				+ ", length=" + length + ", replacementCost=" + replacementCost + ", rating=" + rating
-				+ ", specialFeatures=" + specialFeatures + "]";
+				+ ", specialFeatures=" + specialFeatures + ", actors=" + actors + "]";
 	}
+
+	
 }

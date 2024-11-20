@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -266,7 +267,12 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			
 				ps.setString(2, aFilm.getTitle());
 				ps.setString(2, aFilm.getDescription());
-				ps.setInt(3, aFilm.getReleaseYear());
+				
+				if (aFilm.getReleaseYear() != null) {
+		            ps.setInt(3, aFilm.getReleaseYear());
+		        } else {
+		            ps.setNull(3, Types.INTEGER);
+		        }
 		        ps.setInt(4, aFilm.getLanguageId());
 		        ps.setInt(5, aFilm.getRentalDuration());
 		        ps.setDouble(6, aFilm.getRentalRate());

@@ -20,6 +20,11 @@
 		<input type="submit" placeholder="Enter film title" name="doThis"
 			value="Find">
 	</form>
+	<h5>Create a New Film</h5>
+	<form action="createFilm.do"  method="POST">
+	<input type="submit" placeholder="Create Film" name="doThis"
+			value="Create">
+	</form>
 	
 	<table>
 		<tr>
